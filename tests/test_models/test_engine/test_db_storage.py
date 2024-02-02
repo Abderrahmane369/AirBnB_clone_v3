@@ -83,37 +83,4 @@ class TestFileStorage(unittest.TestCase):
     def test_new(self):
         """test that new adds an object to the database"""
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_save(self):
-        """test that save properly saves objects to file"""
-        obj = BaseModel()
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_get(self):
-        """get test"""
-        obj = BaseModel()
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_count(self):
-        """count"""
-        obj = BaseModel()
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_delete(self):
-        """dlete"""
-        obj = BaseModel()
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_close(self):
-        """close"""
-        obj = BaseModel()
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all(self):
-        """all"""
-        obj = BaseModel()
-
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_reload(self):
-        """reload"""
-        obj = BaseModel()
