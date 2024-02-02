@@ -114,32 +114,97 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_get(self):
-        """get test"""
-        obj = BaseModel()
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_count(self):
-        """count"""
-        obj = BaseModel()
+class TestFileStorage(unittest.TestCase):
+    """Test the FileStorage class"""
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_delete(self):
-        """dlete"""
-        obj = BaseModel()
+    # ... existing test methods ...
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_close(self):
-        """close"""
-        obj = BaseModel()
+    def test_all_returns_dict(self):
+        """Test that all returns the FileStorage.__objects attr"""
+        storage = FileStorage()
+        new_dict = storage.all()
+        self.assertEqual(type(new_dict), dict)
+        self.assertIs(new_dict, storage._FileStorage__objects)
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_all(self):
-        """all"""
-        obj = BaseModel()
+    def test_new(self):
+        """Test that new adds an object to the FileStorage.__objects attr"""
+        storage = FileStorage()
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = {}
+        test_dict = {}
+        for key, value in classes.items():
+            with self.subTest(key=key, value=value):
+                instance = value()
+                instance_key = instance.__class__.__name__ + "." + instance.id
+                storage.new(instance)
+                test_dict[instance_key] = instance
+                self.assertEqual(test_dict, storage._FileStorage__objects)
+        FileStorage._FileStorage__objects = save
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_save(self):
+        """Test that save properly saves objects to file.json"""
+        storage = FileStorage()
+        new_dict = {}
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            new_dict[instance_key] = instance
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = new_dict
+        storage.save()
+        FileStorage._FileStorage__objects = save
+        for key, value in new_dict.items():
+            new_dict[key] = value.to_dict()
+        string = json.dumps(new_dict)
+        with open("file.json", "r") as f:
+            js = f.read()
+        self.assertEqual(json.loads(string), json.loads(js))
+
     def test_reload(self):
-        """reload"""
-        obj = BaseModel()
+        """Test that reload properly reloads objects from file.json"""
+        storage = FileStorage()
+        new_dict = {}
+        for key, value in classes.items():
+            instance = value()
+            instance_key = instance.__class__.__name__ + "." + instance.id
+            new_dict[instance_key] = instance
+        with open("file.json", "w") as f:
+            f.write(json.dumps(new_dict))
+        storage.reload()
+        self.assertEqual(storage.all(), new_dict)
+
+    def test_delete(self):
+        """Test that delete properly deletes an object from __objects"""
+        storage = FileStorage()
+        instance = BaseModel()
+        instance_key = instance.__class__.__name__ + "." + instance.id
+        storage._FileStorage__objects[instance_key] = instance
+        storage.delete(instance)
+        self.assertNotIn(instance_key, storage._FileStorage__objects)
+
+    def test_close(self):
+        """Test that close properly calls reload"""
+        storage = FileStorage()
+        with patch('models.engine.file_storage.FileStorage.reload') as mock_reload:
+            storage.close()
+            mock_reload.assert_called_once()
+
+    def test_get(self):
+        """Test that get returns the object with the specified class and id"""
+        storage = FileStorage()
+        instance = BaseModel()
+        instance_key = instance.__class__.__name__ + "." + instance.id
+        storage._FileStorage__objects[instance_key] = instance
+        retrieved_instance = storage.get(BaseModel, instance.id)
+        self.assertEqual(retrieved_instance, instance)
+
+    def test_count(self):
+        """Test that count returns the number of objects of the specified class"""
+        storage = FileStorage()
+        instance1 = BaseModel()
+        instance2 = BaseModel()
+        instance3 = Amenity()
+        self.assertEqual(storage.count(BaseModel), 2)
+        self.assertEqual(storage.count(Amenity), 1)
+        self.assertEqual(storage.count(State), 0)
