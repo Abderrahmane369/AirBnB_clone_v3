@@ -68,17 +68,69 @@ test_db_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
-class TestFileStorage(unittest.TestCase):
-    """Test the FileStorage class"""
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all_returns_dict(self):
-        """Test that all returns a dictionaty"""
-        self.assertIs(type(models.storage.all()), dict)
+class TestDBStorage(unittest.TestCase):
+    # ...
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all_no_class(self):
-        """Test that all returns all rows when no class is passed"""
+    def test_all_method_with_class(self):
+        """Test the all method with a specific class"""
+        storage = DBStorage()
+        storage.reload()
+        all_objs = storage.all(State)
+        self.assertEqual(type(all_objs), dict)
+        self.assertTrue(all(isinstance(obj, State)
+                        for obj in all_objs.values()))
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_new(self):
-        """test that new adds an object to the database"""
+    def test_new_method(self):
+        """Test the new method"""
+        storage = DBStorage()
+        state = State(name="California")
+        storage.new(state)
+        self.assertIn(state, storage._DBStorage__session)
+
+    def test_save_method(self):
+        """Test the save method"""
+        storage = DBStorage()
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        self.assertIn(state, storage._DBStorage__session)
+
+    def test_delete_method(self):
+        """Test the delete method"""
+        storage = DBStorage()
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        storage.delete(state)
+        self.assertNotIn(state, storage._DBStorage__session)
+
+    def test_reload_method(self):
+        """Test the reload method"""
+        storage = DBStorage()
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        storage.reload()
+        self.assertNotIn(state, storage._DBStorage__session)
+
+    def test_close_method(self):
+        """Test the close method"""
+        storage = DBStorage()
+        storage.close()
+        self.assertIsNone(storage._DBStorage__session)
+
+    def test_get_method(self):
+        """Test the get method"""
+        storage = DBStorage()
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        retrieved_state = storage.get(State, state.id)
+        self.assertEqual(retrieved_state, state)
+
+    def test_count_method_with_class(self):
+        """Test the count method with a specific class"""
+        storage = DBStorage()
+        storage.reload()
+        count = storage.count(State)
+        self.assertEqual(count, len(storage.all(State)))
