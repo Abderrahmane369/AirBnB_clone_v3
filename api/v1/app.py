@@ -10,7 +10,7 @@ app.register_blueprint(app_views)
 
 
 @app.teardown_appcontext
-def close_storage(exeption):
+def storage_closage(exeption):
     """close storage"""
     storage.close()
 
