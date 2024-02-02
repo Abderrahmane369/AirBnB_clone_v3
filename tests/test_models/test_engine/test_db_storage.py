@@ -92,3 +92,15 @@ class TestFileStorage(unittest.TestCase):
 
     def test_count(self):
         """count"""
+
+    def test_delete(self):
+        """dlete"""
+
+    def test_close(self):
+        """close"""
+
+    def test_all(self):
+        """all"""
+
+    def test_reload(self):
+        """reload"""
