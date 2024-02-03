@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """index"""
-from flask import Blueprint
+from flask import Blueprint, jsonify
 
 app_views = Blueprint('app_views', __name__,
                       url_prefix='/api/v1')
@@ -9,4 +9,4 @@ app_views = Blueprint('app_views', __name__,
 @app_views.route('/status')
 def status():
     """aaaaa"""
-    return {'status': 'OK'}
+    return jsonify({'status': 'OK'})
