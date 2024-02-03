@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """index"""
-from flask import jsonify
 from api.v1.views import app_views
 from models import storage
 from models.user import User
@@ -11,22 +10,22 @@ from models.place import Place
 from models.amenity import Amenity
 
 
-@app_views.route('/status', method=['GET'],
+@app_views.route('/status', methods=['GET'],
                  strict_slashes=False)
 def status():
     """status"""
-    return jsonify({'status': 'OK'})
+    return {'status': 'OK'}
 
 
-@app_views.route('/stats', method=['GET'],
+@app_views.route('/stats', methods=['GET'],
                  strict_slashes=False)
 def stats():
     """stats"""
-    return jsonify({
+    return {
         "amenities": storage.count(Amenity),
         "cities": storage.count(City),
         "places": storage.count(Place),
         "reviews": storage.count(Review),
         "states": storage.count(State),
         "users": storage.count(User)
-    })
+    }
