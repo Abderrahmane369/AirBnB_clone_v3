@@ -28,8 +28,8 @@ def getState(state_id):
 def deleteState(state_id):
     """delete"""
     if storage.get(State, state_id):
-
         storage.delete(storage.get(State, state_id))
+        storage.save()
         return {}, 202
 
     abort(404)
@@ -67,11 +67,12 @@ def updateState(state_id):
 
     icu = {'id', 'created_at', 'updated_at'}
 
+    storage.delete(state)
+
     for a, v in data.items():
         if hasattr(state, a) and a not in icu:
             setattr(state, a, v)
 
-    storage.delete(state)
     storage.new(state)
 
     return state.to_dict(), 200
