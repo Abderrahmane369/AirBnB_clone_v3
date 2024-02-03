@@ -9,7 +9,7 @@ app_views = Blueprint('app_views', __name__,
                       url_prefix='/api/v1')
 
 
-@app_views.route('/status')
+@app_views.route('/status', method=['GET'])
 def status():
     """status"""
     return jsonify({'status': 'OK'})
