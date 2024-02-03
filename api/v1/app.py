@@ -19,7 +19,7 @@ def db_close(exception):
 def error_404(error):
     """404 not found"""
     return jsonify({
-        "error": "Not found"})
+        "error": "Not found"}), 404
 
 
 if __name__ == "__main__":
