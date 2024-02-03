@@ -6,13 +6,7 @@ app_views = Blueprint('app_views', __name__,
                       url_prefix='/api/v1')
 
 
-@app_views.route('/')
-def main():
-    """aaa"""
-    return "hi"
-
-
-@app_views.route('/status')
+@app_views.route('/status', strict_slashes=False)
 def status():
     """aaaaa"""
     return jsonify({'status': 'OK'})
