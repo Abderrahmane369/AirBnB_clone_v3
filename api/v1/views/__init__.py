@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 """init"""
+<<<<<<< HEAD
+=======
+from flask import Blueprint
+>>>>>>> refs/remotes/origin/master
 from api.v1.views import index
 from flask import Blueprint
 import states
