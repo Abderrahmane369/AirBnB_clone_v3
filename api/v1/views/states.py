@@ -74,5 +74,6 @@ def updateState(state_id):
             setattr(state, a, v)
 
     storage.new(state)
+    storage.save()
 
     return state.to_dict(), 200
