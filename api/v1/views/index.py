@@ -9,13 +9,15 @@ app_views = Blueprint('app_views', __name__,
                       url_prefix='/api/v1')
 
 
-@app_views.route('/status', method=['GET'])
+@app_views.route('/status', method=['GET'],
+                 strict_slashes=False)
 def status():
     """status"""
     return jsonify({'status': 'OK'})
 
 
-@app_views.route('stats', strict_slashes=False)
+@app_views.route('stats',
+                 method=['GET'], strict_slashes=False)
 def stats():
     """stats"""
     return jsonify({
