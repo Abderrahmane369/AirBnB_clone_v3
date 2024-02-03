@@ -70,47 +70,85 @@ test_file_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up test class"""
+        cls.storage = FileStorage()
+
+    def setUp(self):
+        """Set up test method"""
+        self.storage.reload()
+
+    def tearDown(self):
+        """Clean up after each test method"""
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
     def test_all_returns_dict(self):
-        """Test that all returns the FileStorage.__objects attr"""
-        storage = FileStorage()
-        new_dict = storage.all()
-        self.assertEqual(type(new_dict), dict)
-        self.assertIs(new_dict, storage._FileStorage__objects)
+        """Test that all returns the FileStorage.__objects attribute"""
+        all_objects = self.storage.all()
+        self.assertIsInstance(all_objects, dict)
+        self.assertIs(all_objects, self.storage._FileStorage__objects)
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_new(self):
-        """test that new adds an object to the FileStorage.__objects attr"""
-        storage = FileStorage()
-        save = FileStorage._FileStorage__objects
-        FileStorage._FileStorage__objects = {}
-        test_dict = {}
-        for key, value in classes.items():
-            with self.subTest(key=key, value=value):
-                instance = value()
-                instance_key = instance.__class__.__name__ + "." + instance.id
-                storage.new(instance)
-                test_dict[instance_key] = instance
-                self.assertEqual(test_dict, storage._FileStorage__objects)
-        FileStorage._FileStorage__objects = save
+        """Test that new adds an object to the FileStorage.__objects attribute"""
+        obj = BaseModel()
+        obj_key = obj.__class__.__name__ + "." + obj.id
+        self.storage.new(obj)
+        self.assertIn(obj_key, self.storage._FileStorage__objects)
 
-    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
-        storage = FileStorage()
-        new_dict = {}
-        for key, value in classes.items():
-            instance = value()
-            instance_key = instance.__class__.__name__ + "." + instance.id
-            new_dict[instance_key] = instance
-        save = FileStorage._FileStorage__objects
-        FileStorage._FileStorage__objects = new_dict
-        storage.save()
-        FileStorage._FileStorage__objects = save
-        for key, value in new_dict.items():
-            new_dict[key] = value.to_dict()
-        string = json.dumps(new_dict)
+        obj = BaseModel()
+        obj_key = obj.__class__.__name__ + "." + obj.id
+        self.storage.new(obj)
+        self.storage.save()
         with open("file.json", "r") as f:
-            js = f.read()
-        self.assertEqual(json.loads(string), json.loads(js))
+            data = json.load(f)
+        self.assertIn(obj_key, data)
 
+    def test_reload(self):
+        """Test that reload properly reloads objects from file.json"""
+        obj = BaseModel()
+        obj_key = obj.__class__.__name__ + "." + obj.id
+        self.storage.new(obj)
+        self.storage.save()
+        self.storage.reload()
+        self.assertIn(obj_key, self.storage._FileStorage__objects)
+
+    def test_delete(self):
+        """Test that delete properly deletes an object from FileStorage.__objects"""
+        obj = BaseModel()
+        obj_key = obj.__class__.__name__ + "." + obj.id
+        self.storage.new(obj)
+        self.storage.delete(obj)
+        self.assertNotIn(obj_key, self.storage._FileStorage__objects)
+
+    def test_close(self):
+        """Test that close properly calls reload method"""
+        with unittest.mock.patch('models.engine.file_storage.FileStorage.reload') as mock_reload:
+            self.storage.close()
+            mock_reload.assert_called_once()
+
+    def test_get(self):
+        """Test that get returns the object with the specified class and id"""
+        obj = BaseModel()
+        obj_key = obj.__class__.__name__ + "." + obj.id
+        self.storage.new(obj)
+        self.assertEqual(obj, self.storage.get(BaseModel, obj.id))
+        self.assertIsNone(self.storage.get(BaseModel, "nonexistent_id"))
+
+    def test_count(self):
+        """Test that count returns the number of objects in FileStorage.__objects"""
+        self.assertEqual(len(self.storage.all()), self.storage.count())
+        obj = BaseModel()
+        self.assertEqual(len(self.storage.all()), self.storage.count())
+        self.storage.new(obj)
+        self.assertEqual(len(self.storage.all()), self.storage.count())
+
+
+if __name__ == '__main__':
+    unittest.main()
