@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 """index"""
-from flask import Blueprint, jsonify
+from flask import jsonify
+from api.v1.views import app_views
 from models import storage
 from models.user import User
 from models.state import State
-
-app_views = Blueprint('app_views', __name__,
-                      url_prefix='/api/v1')
+from models.city import City
+from models.review import Review
+from models.place import Place
+from models.amenity import Amenity
 
 
 @app_views.route('/status', method=['GET'],
@@ -20,5 +22,10 @@ def status():
 def stats():
     """stats"""
     return jsonify({
-        "Amenities": storage.count(User),
-        "State": storage.count(State)})
+        "amenities": storage.count(Amenity),
+        "cities": storage.count(City),
+        "places": storage.count(Place),
+        "reviews": storage.count(Review),
+        "states": storage.count(State),
+        "users": storage.count(User)
+    })
