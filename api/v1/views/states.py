@@ -16,7 +16,7 @@ def states():
 
 
 @app_views.route('/states/<state_id>', strict_slashes=False,
-                 methods=['POST', 'PUT', 'DELETE', 'GET'])
+                 methods=['PUT', 'DELETE', 'GET'])
 @app_views.route('/states/', strict_slashes=False,
                  methods=['POST'])
 def handleStateRequest(state_id=None):
