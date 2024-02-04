@@ -32,8 +32,8 @@ def del_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    storage.delete(city)
-    storage.save()
+   # storage.delete(city)
+   # storage.save()
     return {}, 200
 
 
@@ -50,7 +50,7 @@ def create_city(state_id):
     if 'name' not in body_request:
         abort(400, "Missing name")
     city = City(name=body_request['name'], state_id=state_id)
-    city.save()
+    # city.save()
     return city.to_dict(), 201
 
 
@@ -67,5 +67,5 @@ def update_city(city_id):
     for key, value in body_request.items():
         if key not in ignored_keys:
             setattr(city, key, value)
-    city.save()
+    # city.save()
     return city.to_dict(), 200
