@@ -67,5 +67,3 @@ def handleStateRequest(state_id=None):
         storage.save()
 
         return jsonify(state.to_dict()), 200
-    else:
-        abort(405)
