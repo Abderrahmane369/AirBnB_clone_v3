@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """loooog"""
-from flask import abort, request
+from flask import abort, request, jsonify
 from models import storage
 from models.state import State
 from models.city import City
@@ -11,8 +11,8 @@ from api.v1.views import app_views, cities
                  strict_slashes=False)
 def states():
     """states"""
-    return list(map(lambda v: v.to_dict(),
-                    storage.all(State).values()))
+    return jsonfiy(list(map(lambda v: v.to_dict(),
+                    storage.all(State).values())))
 
 
 @app_views.route('/states/<state_id>', methods=['GET'],
@@ -20,7 +20,7 @@ def states():
 def getState(state_id):
     """get"""
     if storage.get(State, state_id):
-        return storage.get(State, state_id).to_dict()
+        return jsonify(storage.get(State, state_id).to_dict())
     abort(404)
 
 
@@ -31,7 +31,7 @@ def deleteState(state_id):
     if storage.get(State, state_id):
         storage.delete(storage.get(State, state_id))
         storage.save()
-        return {}, 202
+        return jsonify({}), 202
 
     abort(404)
 
@@ -51,7 +51,7 @@ def createState():
     storage.new(state)
     storage.save()
 
-    return state.to_dict(), 201
+    return jsonify(state.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'],
@@ -77,4 +77,4 @@ def updateState(state_id):
     storage.new(state)
     storage.save()
 
-    return state.to_dict(), 200
+    return jsonify(state.to_dict()), 200
