@@ -55,7 +55,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except BaseException:
             pass
 
     def delete(self, obj=None):
@@ -77,7 +77,7 @@ class FileStorage:
             id (int): id of the class instance
             cls (obj): class object_
         """
-        if cls in classes.values() and id and type(id) is str:
+        if cls in classes.values() and id and isinstance(id, str):
             d_obj = self.all(cls)
             for key, value in d_obj.items():
                 if key.split(".")[1] == id:
