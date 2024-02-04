@@ -68,4 +68,4 @@ def handleStateRequest(state_id=None):
 
         return jsonify(state.to_dict()), 200
     else:
-        return
+        abort(405)
