@@ -63,7 +63,7 @@ def update_city(city_id):
     if not city:
         abort(404)
     if not body_request:
-        abort(404, "Not a JSON")
+        abort(400, "Not a JSON")
     ignored_keys = ['id', 'state_id', 'created_at', 'updated_at']
     for key, value in body_request.items():
         if key not in ignored_keys:
