@@ -4,7 +4,7 @@ from flask import abort, request
 from models import storage
 from models.state import State
 from models.city import City
-from api.v1.views import app_views
+from api.v1.views import app_views, cities
 
 
 @app_views.route('/states', methods=['GET'],
@@ -29,18 +29,13 @@ def getState(state_id):
 def deleteState(state_id):
     """delete"""
     if storage.get(State, state_id):
-        for city in storage.all(City).values():
-            if city.to_dict().get('state_id') == state_id:
-                storage.delete(city)
-                storage.save()
-                
         storage.delete(storage.get(State, state_id))
         storage.save()
         return {}, 202
 
     abort(404)
 
- 
+
 @app_views.route('/states/', methods=['POST'],
                  strict_slashes=False)
 def createState():
@@ -82,4 +77,4 @@ def updateState(state_id):
     storage.new(state)
     storage.save()
 
-    return state.to_dict(), 200
+    return state.to_dict().pop(cities), 200
