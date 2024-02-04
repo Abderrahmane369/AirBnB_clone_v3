@@ -60,7 +60,7 @@ def handleStateRequest(state_id=None):
         storage.delete(state)
 
         for a, v in data.items():
-            if hasattr(state, a) and a not in icu:
+            if a not in icu:
                 setattr(state, a, v)
 
         storage.new(state)
