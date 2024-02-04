@@ -57,6 +57,8 @@ def handleStateRequest(state_id=None):
 
         icu = {'id', 'created_at', 'updated_at'}
 
+        storage.delete(state)
+
         for a, v in data.items():
             if a not in icu:
                 setattr(state, a, v)
