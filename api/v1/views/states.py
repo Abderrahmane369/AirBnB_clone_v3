@@ -77,4 +77,4 @@ def updateState(state_id):
     storage.new(state)
     storage.save()
 
-    return state.to_dict().pop(cities), 200
+    return state.to_dict(), 200
