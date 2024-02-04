@@ -2,7 +2,7 @@
 """Module documentation"""
 from flask import Flask, jsonify, abort, request
 from models.base_model import BaseModel
-from api.v1.views import app_view
+from api.v1.views import app_views
 from models.state import State
 from models.city import City
 from models import storage
