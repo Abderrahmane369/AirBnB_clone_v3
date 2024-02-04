@@ -14,7 +14,7 @@ def cities(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort(404)
-    return [city.to_dict() for city in state.cities]
+    return jsonify([city.to_dict() for city in state.cities])
 
 
 @app_views.route('/cities/<city_id>', methods=['GET'], strict_slashes=False)
@@ -23,7 +23,7 @@ def get_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    return city.to_dict()
+    return jsonify(city.to_dict())
 
 
 @app_views.route('/cities/<city_id>', methods=['DELETE'], strict_slashes=False)
@@ -32,7 +32,7 @@ def del_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-    return {}, 200
+    return jsonify({}), 200
 
 
 @app_views.route('/states/<state_id>/cities', methods=['POST'],
@@ -48,7 +48,7 @@ def create_city(state_id):
     if 'name' not in body_request:
         abort(400, "Missing name")
     city = City(name=body_request['name'], state_id=state_id)
-    return city.to_dict(), 201
+    return jsonify(city.to_dict()), 201
 
 
 @app_views.route('/cities/<city_id>', methods=['PUT'], strict_slashes=False)
@@ -64,4 +64,4 @@ def update_city(city_id):
     for key, value in body_request.items():
         if key not in ignored_keys:
             setattr(city, key, value)
-    return city.to_dict(), 200
+    return jsonify(city.to_dict()), 200
