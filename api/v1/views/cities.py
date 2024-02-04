@@ -50,8 +50,8 @@ def create_city(state_id):
         abort(400, "Not a JSON")
     if 'name' not in body_request:
         abort(400, "Missing name")
-    city = City(**body_request)
     body_request["state_id"] = state_id
+    city = City(**body_request)
     storage.new(city)
     storage.save()
     return jsonify(city.to_dict()), 201
