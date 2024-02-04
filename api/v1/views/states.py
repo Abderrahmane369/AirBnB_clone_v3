@@ -7,34 +7,32 @@ from models.city import City
 from api.v1.views import app_views, cities
 
 
-@app_views.route('/states', methods=['GET'],
-                 strict_slashes=False)
+@app_views.route('/states', strict_slashes=False,
+                 methods=['GET'])
 def states():
     """states"""
     return list(map(lambda v: v.to_dict(),
                     storage.all(State).values()))
 
 
-@app_views.route('/states/<state_id>', methods=['GET'],
-                 strict_slashes=False)
-def handleStateRequest(state_id):
-    """get"""
+@app_views.route('/states/<state_id>', strict_slashes=False,
+                 methods=['POST', 'PUT', 'DELETE', 'GET'])
+@app_views.route('/states/', strict_slashes=False,
+                 methods=['POST'])
+def handleStateRequest(state_id=None):
+    """Handle requests"""
     if request.method == 'GET':
         if storage.get(State, state_id):
             return storage.get(State, state_id).to_dict()
         abort(404)
-
-    """delete"""
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         if storage.get(State, state_id):
             storage.delete(storage.get(State, state_id))
             storage.save()
             return {}, 202
 
         abort(404)
-
-    """create"""
-    if request.method == 'POST':
+    elif request.method == 'POST':
         data = request.get_json()
         state = State(**data)
 
@@ -48,9 +46,7 @@ def handleStateRequest(state_id):
 
         return state.to_dict(), 201
 
-
-    """update"""
-    if request.method == 'PUT':
+    elif request.method == 'PUT':
         data = request.get_json()
         state = storage.get(State, state_id)
 
@@ -71,3 +67,5 @@ def handleStateRequest(state_id):
         storage.save()
 
         return state.to_dict(), 200
+    else:
+        return
