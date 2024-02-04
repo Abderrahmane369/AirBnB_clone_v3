@@ -32,8 +32,8 @@ def del_city(city_id):
     city = storage.get(City, city_id)
     if not city:
         abort(404)
-   # storage.delete(city)
-   # storage.save()
+    # storage.delete(city)
+    # storage.save()
     return {}, 200
 
 
