@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """loooog"""
-from flask import abort, request
+from flask import abort, request, jsonify
 from models import storage
 from models.state import State
 from models.city import City
@@ -11,8 +11,8 @@ from api.v1.views import app_views, cities
                  methods=['GET'])
 def states():
     """states"""
-    return list(map(lambda v: v.to_dict(),
-                    storage.all(State).values()))
+    return jsonify(list(map(lambda v: v.to_dict(),
+                            storage.all(State).values())))
 
 
 @app_views.route('/states/<state_id>', strict_slashes=False,
@@ -23,13 +23,13 @@ def handleStateRequest(state_id=None):
     """Handle requests"""
     if request.method == 'GET':
         if storage.get(State, state_id):
-            return storage.get(State, state_id).to_dict()
+            return jsonify(storage.get(State, state_id).to_dict())
         abort(404)
     elif request.method == 'DELETE':
         if storage.get(State, state_id):
             storage.delete(storage.get(State, state_id))
             storage.save()
-            return {}, 202
+            return jsonify({}), 202
 
         abort(404)
     elif request.method == 'POST':
@@ -44,7 +44,7 @@ def handleStateRequest(state_id=None):
         storage.new(state)
         storage.save()
 
-        return state.to_dict(), 201
+        return jsonify(state.to_dict()), 201
 
     elif request.method == 'PUT':
         data = request.get_json()
@@ -66,6 +66,6 @@ def handleStateRequest(state_id=None):
         storage.new(state)
         storage.save()
 
-        return state.to_dict(), 200
+        return jsonify(state.to_dict()), 200
     else:
         return
