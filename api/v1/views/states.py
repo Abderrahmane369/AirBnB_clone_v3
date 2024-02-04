@@ -29,7 +29,7 @@ def handleStateRequest(state_id=None):
         if storage.get(State, state_id):
             storage.delete(storage.get(State, state_id))
             storage.save()
-            return jsonify({}), 202
+            return jsonify({}), 200
 
         abort(404)
     elif request.method == 'POST':
