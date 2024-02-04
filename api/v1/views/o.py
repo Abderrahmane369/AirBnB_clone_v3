@@ -2,7 +2,7 @@
 """Module documentation"""
 from flask import Flask, jsonify, abort, request
 from models.base_model import BaseModel
-from api.v1.views import app_view
+from api.v1.views import app_views
 from models.state import State
 from models.city import City
 from models import storage
@@ -15,7 +15,7 @@ def cities(state_id):
     state = storage.get(State, state_id)
     if not state:
         abort(404)
-    return jsonify([city.to_dict() for city in state.city])
+    return jsonify([city.to_dict() for city in state.cities])
 
 
 @app_views.route('/cities/<city_id>', methods=['GET'], strict_slashes=False)
@@ -38,20 +38,22 @@ def del_city(city_id):
     return jsonify({}), 200
 
 
-@app_views.route('states/<state_id>/cities', methods=['POST'], 
-        strict_slashes=False)
+@app_views.route('states/<state_id>/cities', methods=['POST'],
+                 strict_slashes=False)
 def create_city(state_id):
     """create city"""
-    body_request = request.get_json()
     state = storage.get(State, state_id)
     if not state:
         abort(404)
+    body_request = request.get_json()
     if not body_request:
         abort(400, "Not a JSON")
     if 'name' not in body_request:
         abort(400, "Missing name")
-    city = City(name=body_request['name'], state_id=state_id)
-    city.save()
+    city = City(**body_request)
+    body_request["state_id"] = state_id
+    storage.new(city)
+    storage.save()
     return jsonify(city.to_dict()), 201
 
 
@@ -59,14 +61,14 @@ def create_city(state_id):
 def update_city(city_id):
     """update city"""
     city = storage.get(City, city_id)
-    body_request = request.get_json()
     if not city:
         abort(404)
+    body_request = request.get_json()
     if not body_request:
-        abort(404, "Not a JSON")
+        abort(400, "Not a JSON")
     ignored_keys = ['id', 'state_id', 'created_at', 'updated_at']
     for key, value in body_request.items():
         if key not in ignored_keys:
             setattr(city, key, value)
-    save(city)
+    storage.save(city)
     return jsonify(city.to_dict()), 200
