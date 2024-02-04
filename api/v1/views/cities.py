@@ -68,5 +68,5 @@ def update_city(city_id):
     for key, value in body_request.items():
         if key not in ignored_keys:
             setattr(city, key, value)
-   city.save()
+    city.save()
     return city.to_dict(), 200
