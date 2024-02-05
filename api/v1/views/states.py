@@ -40,6 +40,8 @@ def handleStateRequest(state_id=None):
             abort(400, description='Not a JSON')
         elif 'name' not in data:
             abort(400, description='Missing name')
+        elif data == '':
+            abort(400, description='Missing name')
 
         storage.new(state)
         storage.save()
