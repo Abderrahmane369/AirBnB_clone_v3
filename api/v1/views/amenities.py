@@ -11,7 +11,8 @@ from models import storage
                  strict_slashes=False)
 def amenities():
     """List all amenities"""
-    return jsonify([amenity.to_dict() for amenity in storage.all(Amenity).values()])
+    vals = storage.all(Amenity).values()
+    return jsonify([amenity.to_dict() for amenity in vals])
 
 
 @app_views.route('/amenities/<amenity_id>',
