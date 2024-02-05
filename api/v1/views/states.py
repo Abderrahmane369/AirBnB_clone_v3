@@ -43,8 +43,7 @@ def handleStateRequest(state_id=None):
         elif data == '':
             abort(400, description='Missing name')
 
-        storage.new(state)
-        storage.save()
+        state.save(state)
 
         return jsonify(state.to_dict()), 201
 
@@ -65,7 +64,6 @@ def handleStateRequest(state_id=None):
             if a not in icu:
                 setattr(state, a, v)
 
-        storage.new(state)
-        storage.save()
+        state.save()
 
         return jsonify(state.to_dict()), 200
