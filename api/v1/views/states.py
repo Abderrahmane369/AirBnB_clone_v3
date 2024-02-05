@@ -4,23 +4,18 @@ from flask import Flask, jsonify, abort, request
 from models.base_model import BaseModel
 from api.v1.views import app_views
 from models.state import State
-from models.city import City
 from models import storage
 
 
-@app_views.route('/states/<state_id>/cities',
-                 methods=['GET'], strict_slashes=False)
-def state_cities(state_id):
-    """state cities"""
-    state = storage.get(State, state_id)
-    if not state:
-        abort(404)
-    return jsonify([city.to_dict() for city in state.cities])
+@app_views.route('/states', methods=['GET'], strict_slashes=False)
+def states():
+    """List all states"""
+    return jsonify([state.to_dict() for state in storage.all(State).values()])
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
 def get_state(state_id):
-    """get state"""
+    """Get a specific state"""
     state = storage.get(State, state_id)
     if not state:
         abort(404)
@@ -28,8 +23,8 @@ def get_state(state_id):
 
 
 @app_views.route('/states/<state_id>', methods=['DELETE'], strict_slashes=False)
-def del_state(state_id):
-    """delete state"""
+def delete_state(state_id):
+    """Delete a specific state"""
     state = storage.get(State, state_id)
     if not state:
         abort(404)
@@ -40,7 +35,7 @@ def del_state(state_id):
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def create_state():
-    """create state"""
+    """Create a new state"""
     body_request = request.get_json()
     if not body_request:
         abort(400, "Not a JSON")
@@ -53,7 +48,7 @@ def create_state():
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
 def update_state(state_id):
-    """update state"""
+    """Update a specific state"""
     state = storage.get(State, state_id)
     if not state:
         abort(404)
