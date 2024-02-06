@@ -30,4 +30,4 @@ class User(BaseModel, Base):
         super().__init__(*args, **kwargs)
         m = md5()
         m.update(self.password.encode())
-        self.password = m.hexidigest()
+        self.password = m.hexdigest()
