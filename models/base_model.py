@@ -4,6 +4,7 @@ Contains class BaseModel
 """
 
 from datetime import datetime
+from pyexpat import model
 import models
 from os import getenv
 import sqlalchemy
@@ -70,6 +71,8 @@ class BaseModel:
         new_dict["__class__"] = self.__class__.__name__
         if "_sa_instance_state" in new_dict:
             del new_dict["_sa_instance_state"]
+        if models.storage_t != 'db':
+            new_dict.remove('password')
         return new_dict
 
     def delete(self):
