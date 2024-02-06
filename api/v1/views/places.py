@@ -74,7 +74,9 @@ def update_place(place_id):
     body_request = request.get_json()
     if not body_request:
         abort(400, "Not a JSON")
-    ignored_keys = ['id', 'created_at', 'updated_at', 'user_id']
+    ignored_keys = ['id', 'created_at',
+                    'updated_at', 'user_id',
+                    'city_id']
     for key, value in body_request.items():
         if key not in ignored_keys:
             setattr(place, key, value)
