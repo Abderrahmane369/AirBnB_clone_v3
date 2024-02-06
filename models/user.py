@@ -28,6 +28,7 @@ class User(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """initializes user"""
         super().__init__(*args, **kwargs)
-        m = md5()
-        m.update(self.password.encode())
-        self.password = m.hexdigest()
+        if 'password' in kwargs:
+            m = md5()
+            m.update(kwargs['password'].encode('utf-8'))
+            self.password = m.hexdigest()
